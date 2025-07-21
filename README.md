@@ -32,13 +32,25 @@ then if true the message will be emailed to adminstrator email address about the
 
 ## 4. Test the Workflow
 A message contains inappropriate content is sent in the team message.
+
 <img width="862" height="159" alt="image" src="https://github.com/user-attachments/assets/5b772d3f-5d9a-435d-ab2a-3ff79f826fea" />
+
 The run has successful.
+
 <img width="1898" height="904" alt="image" src="https://github.com/user-attachments/assets/52b1dd0c-b752-4f58-ae91-a1bff93f60d7" />
+
 all trigger pass the run.
+
 <img width="639" height="700" alt="image" src="https://github.com/user-attachments/assets/c916e9be-9ecb-42d3-91f0-661260171035" />
+
 an email has been sent to the administator email.
+
 <img width="1606" height="729" alt="image" src="https://github.com/user-attachments/assets/23918aff-e008-4a63-983f-68f799513b72" />
+
+## challenge
+
+Challenge: The extracted message content was wrapped in HTML tags like <p>stupid</p>, which made string comparisons unreliable and bad request.
+Resolution: A Compose action or substring/replace functions were used to clean the content or detect offensive keywords within the HTML structure.
 
 ## YouTube video Demo
 https://youtu.be/N3XG-0nIRoU
