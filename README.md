@@ -49,7 +49,8 @@ an email has been sent to the administator email.
 
 ## challenge
 
-Challenge: The extracted message content was wrapped in HTML tags like <p>stupid</p>, which made string comparisons unreliable and bad request.
+Challenge: The extracted message content was wrapped in HTML tags like <p> stupid </p>, which made string comparisons unreliable and bad request.
+
 Resolution: A Compose action or substring/replace functions were used to clean the content or detect offensive keywords within the HTML structure.
 
 ## YouTube video Demo
