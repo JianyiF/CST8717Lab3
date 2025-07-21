@@ -1,0 +1,139 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workflows_cst8917lab3demo_name": {
+            "defaultValue": "cst8917lab3demo",
+            "type": "String"
+        },
+        "connections_teams_externalid": {
+            "defaultValue": "/subscriptions/e7ea1011-59fc-41b7-b54c-a8a448512f82/resourceGroups/cst8917lab3demo/providers/Microsoft.Web/connections/teams",
+            "type": "String"
+        },
+        "connections_office365_externalid": {
+            "defaultValue": "/subscriptions/e7ea1011-59fc-41b7-b54c-a8a448512f82/resourceGroups/cst8917lab3demo/providers/Microsoft.Web/connections/office365",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "[parameters('workflows_cst8917lab3demo_name')]",
+            "location": "canadacentral",
+            "properties": {
+                "state": "Enabled",
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "When_a_new_channel_message_is_added": {
+                            "recurrence": {
+                                "interval": 1,
+                                "frequency": "Minute",
+                                "timeZone": "Eastern Standard Time"
+                            },
+                            "evaluatedRecurrence": {
+                                "interval": 1,
+                                "frequency": "Minute",
+                                "timeZone": "Eastern Standard Time"
+                            },
+                            "splitOn": "@triggerBody()",
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['teams']['connectionId']"
+                                    }
+                                },
+                                "method": "get",
+                                "path": "/trigger/beta/teams/@{encodeURIComponent('4ca1f259-acd0-48be-89bc-e8697f0ef88e')}/channels/@{encodeURIComponent('19:m3xeaJrELR0davgbElSmeb4tITSI9It5WNfRKEv81p01@thread.tacv2')}/messages",
+                                "queries": {
+                                    "$top": 50
+                                }
+                            }
+                        }
+                    },
+                    "actions": {
+                        "Condition": {
+                            "actions": {
+                                "Send_an_email_(V2)": {
+                                    "type": "ApiConnection",
+                                    "inputs": {
+                                        "host": {
+                                            "connection": {
+                                                "name": "@parameters('$connections')['office365']['connectionId']"
+                                            }
+                                        },
+                                        "method": "post",
+                                        "body": {
+                                            "To": "nealfan1996@gmail.com",
+                                            "Subject": "Teams Chat Policy Violation Detected",
+                                            "Body": "<p class=\"editor-paragraph\">You have violate the chat rulesby sending @{outputs('Compose')}</p><p class=\"editor-paragraph\">send by @{triggerBody()?['from']?['user']?['displayName']}</p><p class=\"editor-paragraph\">send at @{triggerBody()?['createdDateTime']}</p><p class=\"editor-paragraph\">Please watch you message before sent</p>",
+                                            "Importance": "Normal"
+                                        },
+                                        "path": "/v2/Mail"
+                                    }
+                                }
+                            },
+                            "runAfter": {
+                                "Compose": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "else": {
+                                "actions": {}
+                            },
+                            "expression": {
+                                "or": [
+                                    {
+                                        "contains": [
+                                            "@triggerBody()?['body']?['content']",
+                                            "stupid"
+                                        ]
+                                    },
+                                    {
+                                        "contains": [
+                                            "@triggerBody()?['body']?['content']",
+                                            "dumb"
+                                        ]
+                                    }
+                                ]
+                            },
+                            "type": "If"
+                        },
+                        "Compose": {
+                            "runAfter": {},
+                            "type": "Compose",
+                            "inputs": "@triggerBody()?['body']?['content']"
+                        }
+                    },
+                    "outputs": {}
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "teams": {
+                                "id": "/subscriptions/e7ea1011-59fc-41b7-b54c-a8a448512f82/providers/Microsoft.Web/locations/canadacentral/managedApis/teams",
+                                "connectionId": "[parameters('connections_teams_externalid')]",
+                                "connectionName": "teams"
+                            },
+                            "office365": {
+                                "id": "/subscriptions/e7ea1011-59fc-41b7-b54c-a8a448512f82/providers/Microsoft.Web/locations/canadacentral/managedApis/office365",
+                                "connectionId": "[parameters('connections_office365_externalid')]",
+                                "connectionName": "office365"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}
